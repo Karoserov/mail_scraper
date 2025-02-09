@@ -36,10 +36,10 @@ def connect_to_email():
         raise
 
 def extract_claudia_email(email_body):
-    """Extract email addresses containing 'mk99bg@' from email content."""
+    """Extract email addresses containing 'example@' from email content."""
     email_pattern = r'[\w\.-]+@[\w\.-]+'
     emails = re.findall(email_pattern, str(email_body))
-    claudia_emails = [email for email in emails if 'mk99bg@' in email.lower()]
+    claudia_emails = [email for email in emails if 'example@' in email.lower()]
     return claudia_emails[0] if claudia_emails else None
 
 def parse_emails(days=30):
