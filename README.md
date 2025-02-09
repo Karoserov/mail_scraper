@@ -66,16 +66,8 @@ python email_parser.py --days 7  # Process last 7 days
 python email_parser.py --days 7 --folder "[Gmail]/Sent Mail"  # Process last 7 days of sent mail
 ```
 
-Common folder names:
-- `INBOX` - Received emails
-- `[Gmail]/Sent Mail` - Sent emails
-- `[Gmail]/Drafts` - Draft emails
-- `[Gmail]/All Mail` - All emails
-- `[Gmail]/Spam` - Spam folder
 
-Note: Folder names might vary depending on your email provider and settings. Use `--list-folders` to see available folders.
-
-3. Automated Running with Cron
+Automated Running with Cron
 
 To set up automated daily runs, follow these steps:
 
