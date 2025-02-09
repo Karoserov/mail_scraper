@@ -36,46 +36,19 @@ def connect_to_email():
         raise
 
 def extract_claudia_email(email_body):
-    """Extract email addresses containing 'some-email@' from email content."""
+    """Extract email addresses containing 'mk99bg@' from email content."""
     email_pattern = r'[\w\.-]+@[\w\.-]+'
     emails = re.findall(email_pattern, str(email_body))
-    claudia_emails = [email for email in emails if 'some-email@' in email.lower()]
+    claudia_emails = [email for email in emails if 'mk99bg@' in email.lower()]
     return claudia_emails[0] if claudia_emails else None
 
-def list_mailboxes():
-    """List all available mailbox folders."""
-    mail = connect_to_email()
-    try:
-        status, mailboxes = mail.list()
-        if status == 'OK':
-            print("\nAvailable mailbox folders:")
-            for mailbox in mailboxes:
-                # Decode the mailbox name
-                folder = mailbox.decode().split(' "/" ')[-1].strip('"')
-                print(f"- {folder}")
-        return mailboxes
-    finally:
-        mail.logout()
-
-def parse_emails(days=30, folder='INBOX'):
+def parse_emails(days=30):
     """Parse emails and extract required information.
     Args:
         days (int): Number of days to look back for emails
-        folder (str): Mailbox folder to search in (e.g., 'INBOX', '[Gmail]/Sent Mail')
     """
     mail = connect_to_email()
-    try:
-        status, mailboxes = mail.list()
-        if status != 'OK':
-            raise ValueError("Failed to list mailboxes")
-            
-        # Select the specified folder
-        status, data = mail.select(folder)
-        if status != 'OK':
-            print(f"\nAvailable folders:")
-            for mailbox in mailboxes:
-                print(f"- {mailbox.decode().split(' "/" ')[-1].strip('"')}")
-            raise ValueError(f"Could not access folder '{folder}'. Please choose from the available folders listed above.")
+    mail.select('inbox')
     
     # Calculate date for filtering
     date_since = (datetime.now() - timedelta(days=days)).strftime("%d-%b-%Y")
@@ -161,32 +134,14 @@ def save_to_csv(email_data):
 def main():
     try:
         import sys
-        import argparse
-        
-        parser = argparse.ArgumentParser(description='Email parsing script')
-        parser.add_argument('--days', type=int, default=30,
-                          help='Number of days to look back (default: 30)')
-        parser.add_argument('--folder', type=str, default='INBOX',
-                          help='Mailbox folder to search in (default: INBOX)')
-        parser.add_argument('--list-folders', action='store_true',
-                          help='List available mailbox folders and exit')
-        
-        args = parser.parse_args()
-        
-        if args.list_folders:
-            list_mailboxes()
-            return
-        
-        email_data = parse_emails(days=args.days, folder=args.folder)
+        days = int(sys.argv[1]) if len(sys.argv) > 1 else 30
+        email_data = parse_emails(days=days)
         save_to_csv(email_data)
-        
     except Exception as e:
         print(f"Error: {e}")
         if 'AUTHENTICATIONFAILED' not in str(e):
-            print("\nUsage: python email_parser.py [--days DAYS] [--folder FOLDER] [--list-folders]")
-            print("  --days: Number of days to look back (default: 30)")
-            print("  --folder: Mailbox folder to search in (default: INBOX)")
-            print("  --list-folders: List available mailbox folders and exit")
+            print("\nUsage: python email_parser.py [days]")
+            print("  days: Number of days to look back (default: 30)")
 
 if __name__ == "__main__":
     main()
